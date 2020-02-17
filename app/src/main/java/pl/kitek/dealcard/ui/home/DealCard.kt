@@ -1,15 +1,15 @@
 package pl.kitek.dealcard.ui.home
 
 import androidx.compose.Composable
-import androidx.compose.unaryPlus
-import androidx.ui.core.*
+import androidx.ui.core.Clip
+import androidx.ui.core.Modifier
+import androidx.ui.core.Text
 import androidx.ui.foundation.DrawImage
-import androidx.ui.foundation.shape.border.Border
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
+import androidx.ui.graphics.SolidColor
 import androidx.ui.graphics.vector.DrawVector
 import androidx.ui.layout.*
-import androidx.ui.layout.Size
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.ripple.Ripple
 import androidx.ui.material.surface.Surface
@@ -20,6 +20,8 @@ import androidx.ui.text.font.FontFamily
 import androidx.ui.text.font.FontWeight
 import androidx.ui.text.style.TextDecoration
 import androidx.ui.tooling.preview.Preview
+import androidx.ui.unit.dp
+import androidx.ui.unit.sp
 import pl.kitek.dealcard.R
 import pl.kitek.dealcard.data.deal1
 import pl.kitek.dealcard.data.deal2
@@ -31,18 +33,13 @@ import pl.kitek.dealcard.ui.dealCardFontFamily
 fun DealCard(deal: BasicDeal) {
     Ripple(bounded = true) {
         Column {
-            Stack() {
-                expanded {
-                    DealCardImage(
-                        mainImageRes = deal.mainImageResId,
-                        partnerImageRes = deal.partnerLogoResId
-                    )
-                }
-                aligned(Alignment.BottomRight) {
-                    DealPrice(deal.price)
-                }
+            Stack {
+                DealCardImage(
+                    mainImageRes = deal.mainImageResId,
+                    partnerImageRes = deal.partnerLogoResId
+                )
+                DealPrice(deal.price, modifier = LayoutGravity.BottomRight)
             }
-
             DealNames(deal.title, deal.subtitle, deal.isFavourite)
             DealSellingPoints(deal.usps)
             DealSearchTags(deal.searchTags)
@@ -51,27 +48,31 @@ fun DealCard(deal: BasicDeal) {
 }
 
 @Composable
-fun DealCardImage(mainImageRes: Int, partnerImageRes: Int) {
-    val mainImage = +imageResource(mainImageRes)
-
-    Stack(modifier = Spacing(left = 16.dp, top = 16.dp, right = 16.dp, bottom = 4.dp)) {
-        expanded {
-            Container(modifier = AspectRatio(1.5f)) {
-                Clip(shape = RoundedCornerShape(4.dp)) {
-                    DrawImage(image = mainImage)
-                }
+fun DealCardImage(
+    mainImageRes: Int,
+    partnerImageRes: Int
+) {
+    Stack(
+        modifier = LayoutWidth.Fill + LayoutPadding(
+            left = 16.dp,
+            top = 16.dp,
+            right = 16.dp,
+            bottom = 4.dp
+        )
+    ) {
+        Container(modifier = LayoutAspectRatio(1.5f)) {
+            Clip(shape = RoundedCornerShape(4.dp)) {
+                val mainImage = imageResource(mainImageRes)
+                DrawImage(image = mainImage)
             }
         }
-
-        aligned(Alignment.TopLeft) {
-            PartnerLogoImage(partnerImageRes)
-        }
+        PartnerLogoImage(partnerImageRes, modifier = LayoutGravity.TopLeft)
     }
 }
 
 @Composable
-fun PartnerLogoImage(partnerImageRes: Int) {
-    val partnerLogo = if (partnerImageRes > 0) +imageResource(partnerImageRes) else null
+fun PartnerLogoImage(partnerImageRes: Int, modifier: Modifier = Modifier.None) {
+    val partnerLogo = if (partnerImageRes > 0) imageResource(partnerImageRes) else null
     partnerLogo?.let {
         val inputWidth = partnerLogo.width.toFloat()
         val inputHeight = partnerLogo.height.toFloat()
@@ -81,10 +82,10 @@ fun PartnerLogoImage(partnerImageRes: Int) {
         val width = height * inputAspectRatio
 
         Container(
-            modifier = Size(
+            modifier = modifier + LayoutSize(
                 width = width,
                 height = height
-            ) wraps Spacing(left = 16.dp, top = 16.dp)
+            ) + LayoutPadding(left = 16.dp, top = 16.dp)
         ) {
             DrawImage(image = partnerLogo)
         }
@@ -92,12 +93,12 @@ fun PartnerLogoImage(partnerImageRes: Int) {
 }
 
 @Composable
-fun DealPrice(price: DealPrice) {
+fun DealPrice(price: DealPrice, modifier: Modifier = Modifier.None) {
     val oldPriceTextStyle = TextStyle(
         fontSize = 14.sp,
         fontFamily = FontFamily.SansSerif,
-        decoration = TextDecoration.LineThrough,
-        color = Color.White
+        color = Color.White,
+        textDecoration = TextDecoration.LineThrough
     )
     val newPriceTextStyle = TextStyle(
         fontSize = 18.sp,
@@ -109,43 +110,37 @@ fun DealPrice(price: DealPrice) {
     Surface(
         color = Color.Red,
         shape = RoundedCornerShape(4.dp),
-        modifier = Spacing(right = 12.dp)
+        modifier = modifier + LayoutPadding(right = 12.dp)
     ) {
         Row(
-            modifier = Spacing(left = 16.dp, right = 16.dp, top = 8.dp, bottom = 8.dp),
+            modifier = LayoutPadding(left = 16.dp, right = 16.dp, top = 8.dp, bottom = 8.dp),
             arrangement = Arrangement.Center
         ) {
             Text(
                 price.oldPrice,
                 style = oldPriceTextStyle,
-                modifier = Spacing(right = 4.dp, top = 3.dp)
+                modifier = LayoutPadding(right = 4.dp, top = 3.dp)
             )
-            Text(price.newPrice, style = newPriceTextStyle, modifier = Spacing(left = 4.dp))
+            Text(price.newPrice, style = newPriceTextStyle, modifier = LayoutPadding(left = 4.dp))
         }
     }
 }
 
 @Composable
 fun DealNames(title: String, subtitle: String, isFavourite: Boolean) {
-    val titleStyle = ((+MaterialTheme.typography()).subtitle1)
-    val subTitleStyle = ((+MaterialTheme.typography()).subtitle2)
+    val titleStyle = ((MaterialTheme.typography()).subtitle1)
+    val subTitleStyle = ((MaterialTheme.typography()).subtitle2)
 
-    FlexRow(crossAxisSize = LayoutSize.Expand, modifier = Spacing(left = 16.dp, right = 4.dp)) {
-
-        expanded(flex = 1f) {
-            Column(modifier = Spacing(top = 11.dp)) {
-                Text(title, style = titleStyle)
-                Text(
-                    subtitle,
-                    style = subTitleStyle,
-                    modifier = Spacing(top = 2.dp, bottom = 4.dp)
-                )
-            }
+    Row(modifier = LayoutPadding(left = 16.dp, right = 4.dp) + LayoutWidth.Fill) {
+        Column(modifier = LayoutPadding(top = 11.dp) + LayoutFlexible(1f)) {
+            Text(title, style = titleStyle)
+            Text(
+                subtitle,
+                style = subTitleStyle,
+                modifier = LayoutPadding(top = 2.dp, bottom = 4.dp)
+            )
         }
-
-        inflexible {
-            DealFavourite(isFavourite)
-        }
+        DealFavourite(isFavourite)
     }
 }
 
@@ -156,11 +151,11 @@ fun DealFavourite(isFavourite: Boolean) {
     } else {
         R.drawable.ic_baseline_favorite_border_24
     }
-    val favIcon = +vectorResource(iconRes)
+    val favIcon = vectorResource(iconRes)
 
     Ripple(bounded = true) {
         Padding(padding = 12.dp) {
-            Container(modifier = Size(width = 24.dp, height = 24.dp)) {
+            Container(modifier = LayoutSize(width = 24.dp, height = 24.dp)) {
                 DrawVector(vectorImage = favIcon)
             }
         }
@@ -173,12 +168,12 @@ fun DealSellingPoints(usps: List<UniqueSellingPoint>) {
 
     Row(
         arrangement = Arrangement.Begin,
-        modifier = Spacing(
+        modifier = LayoutPadding(
             left = 8.dp,
             right = 8.dp,
             top = 4.dp,
             bottom = 8.dp
-        ) wraps ExpandedWidth
+        ) + LayoutWidth.Fill
     ) {
         usps.forEach {
             when (it) {
@@ -191,14 +186,14 @@ fun DealSellingPoints(usps: List<UniqueSellingPoint>) {
 
 @Composable
 fun DealDealBoughtSellingPoint(amount: String) {
-    Row(modifier = Spacing(left = 8.dp, right = 8.dp)) {
-        val icon = +vectorResource(R.drawable.ic_baseline_check_24)
-        Container(modifier = Size(width = 18.dp, height = 18.dp)) {
+    Row(modifier = LayoutPadding(left = 8.dp, right = 8.dp)) {
+        val icon = vectorResource(R.drawable.ic_baseline_check_24)
+        Container(modifier = LayoutSize(width = 18.dp, height = 18.dp)) {
             DrawVector(vectorImage = icon)
         }
         Text(
             "$amount köpta",
-            modifier = Spacing(left = 8.dp),
+            modifier = LayoutPadding(left = 8.dp),
             style = TextStyle(fontSize = 14.sp, fontFamily = FontFamily.SansSerif)
         )
     }
@@ -206,14 +201,14 @@ fun DealDealBoughtSellingPoint(amount: String) {
 
 @Composable
 fun DealSaveSellingPoint(amount: Int) {
-    Row(modifier = Spacing(left = 8.dp, right = 8.dp)) {
-        val icon = +vectorResource(R.drawable.ic_baseline_new_releases_24)
-        Container(modifier = Size(width = 18.dp, height = 18.dp)) {
+    Row(modifier = LayoutPadding(left = 8.dp, right = 8.dp)) {
+        val icon = vectorResource(R.drawable.ic_baseline_new_releases_24)
+        Container(modifier = LayoutSize(width = 18.dp, height = 18.dp)) {
             DrawVector(vectorImage = icon)
         }
         Text(
             "Spara $amount%",
-            modifier = Spacing(left = 8.dp),
+            modifier = LayoutPadding(left = 8.dp),
             style = TextStyle(
                 fontSize = 14.sp,
                 fontFamily = FontFamily.SansSerif,
@@ -226,13 +221,14 @@ fun DealSaveSellingPoint(amount: Int) {
 @Composable
 fun DealSearchTags(searchTags: List<String>) {
     if (searchTags.isEmpty()) return
+
     Row(
-        modifier = Spacing(
+        modifier = LayoutPadding(
             left = 8.dp,
             right = 8.dp,
             top = 8.dp,
             bottom = 8.dp
-        ) wraps ExpandedWidth
+        ) + LayoutWidth.Fill
     ) {
         searchTags.forEach { DealSearchTag(it) }
     }
@@ -241,21 +237,22 @@ fun DealSearchTags(searchTags: List<String>) {
 @Composable
 fun DealSearchTag(name: String) {
     Surface(
-        border = Border(color = Color(0xb3000000), width = 1.dp),
+        borderWidth = 1.dp,
+        borderBrush = SolidColor(Color(0xb3000000)),
         shape = RoundedCornerShape(16.dp),
-        modifier = Spacing(left = 4.dp, right = 4.dp)
+        modifier = LayoutPadding(left = 4.dp, right = 4.dp)
     ) {
         Ripple(bounded = true) {
             Padding(left = 8.dp, right = 8.dp, top = 7.dp, bottom = 7.dp) {
-                Row() {
+                Row {
                     VectorImage(
                         R.drawable.ic_baseline_search_24,
-                        Size(width = 18.dp, height = 18.dp)
+                        LayoutSize(width = 18.dp, height = 18.dp)
                     )
                     Text(
                         name,
                         style = TextStyle(fontSize = 14.sp, fontFamily = FontFamily.SansSerif),
-                        modifier = Spacing(left = 4.dp, right = 4.dp, bottom = 1.dp)
+                        modifier = LayoutPadding(left = 4.dp, right = 4.dp, bottom = 1.dp)
                     )
                 }
             }

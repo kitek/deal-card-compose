@@ -1,7 +1,6 @@
 package pl.kitek.dealcard.ui.home
 
 import androidx.compose.Composable
-import androidx.compose.unaryPlus
 import androidx.ui.core.Text
 import androidx.ui.foundation.VerticalScroller
 import androidx.ui.layout.Column
@@ -13,10 +12,10 @@ import pl.kitek.dealcard.model.BasicDeal
 
 @Composable
 fun HomeScreen() {
-    Column() {
-        TopAppBar(title = { Text(+stringResource(R.string.app_name)) })
-        VerticalScroller(modifier = Flexible(1f)) {
-            Column() {
+    Column {
+        TopAppBar(title = { Text(stringResource(R.string.app_name)) })
+        VerticalScroller(modifier = LayoutFlexible(1f)) {
+            Column {
                 HomeVerticalDeals(deals)
             }
         }

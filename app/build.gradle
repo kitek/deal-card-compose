@@ -31,6 +31,9 @@ android {
     buildFeatures {
         compose true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion "0.1.0-dev04"
+    }
 }
 
 dependencies {
@@ -39,11 +42,11 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
 
-    implementation 'androidx.ui:ui-framework:0.1.0-dev03'
-    implementation 'androidx.ui:ui-layout:0.1.0-dev03'
-    implementation 'androidx.ui:ui-material:0.1.0-dev03'
-    implementation 'androidx.ui:ui-tooling:0.1.0-dev03'
-    implementation 'androidx.ui:ui-foundation:0.1.0-dev03'
+    implementation 'androidx.ui:ui-framework:0.1.0-dev04'
+    implementation 'androidx.ui:ui-layout:0.1.0-dev04'
+    implementation 'androidx.ui:ui-material:0.1.0-dev04'
+    implementation 'androidx.ui:ui-tooling:0.1.0-dev04'
+    implementation 'androidx.ui:ui-foundation:0.1.0-dev04'
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
