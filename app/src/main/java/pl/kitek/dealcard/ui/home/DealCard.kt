@@ -4,6 +4,7 @@ import androidx.compose.Composable
 import androidx.ui.core.Clip
 import androidx.ui.core.Modifier
 import androidx.ui.core.Text
+import androidx.ui.foundation.Clickable
 import androidx.ui.foundation.DrawImage
 import androidx.ui.foundation.shape.corner.RoundedCornerShape
 import androidx.ui.graphics.Color
@@ -30,19 +31,25 @@ import pl.kitek.dealcard.ui.VectorImage
 import pl.kitek.dealcard.ui.dealCardFontFamily
 
 @Composable
-fun DealCard(deal: BasicDeal) {
+fun DealCard(model: DealModel) {
     Ripple(bounded = true) {
         Column {
             Stack {
                 DealCardImage(
-                    mainImageRes = deal.mainImageResId,
-                    partnerImageRes = deal.partnerLogoResId
+                    mainImageRes = model.basicDeal.mainImageResId,
+                    partnerImageRes = model.basicDeal.partnerLogoResId
                 )
-                DealPrice(deal.price, modifier = LayoutGravity.BottomRight)
+                DealPrice(model.basicDeal.price, modifier = LayoutGravity.BottomRight)
             }
-            DealNames(deal.title, deal.subtitle, deal.isFavourite)
-            DealSellingPoints(deal.usps)
-            DealSearchTags(deal.searchTags)
+            DealNamesRow(
+                model.basicDeal.title,
+                model.basicDeal.subtitle,
+                model.isFavourite
+            ) {
+                model.toggleFavourite()
+            }
+            DealSellingPoints(model.basicDeal.usps)
+            DealSearchTags(model.basicDeal.searchTags)
         }
     }
 }
@@ -127,7 +134,12 @@ fun DealPrice(price: DealPrice, modifier: Modifier = Modifier.None) {
 }
 
 @Composable
-fun DealNames(title: String, subtitle: String, isFavourite: Boolean) {
+fun DealNamesRow(
+    title: String,
+    subtitle: String,
+    isFavourite: Boolean,
+    favouriteOnClick: () -> Unit
+) {
     val titleStyle = ((MaterialTheme.typography()).subtitle1)
     val subTitleStyle = ((MaterialTheme.typography()).subtitle2)
 
@@ -140,23 +152,24 @@ fun DealNames(title: String, subtitle: String, isFavourite: Boolean) {
                 modifier = LayoutPadding(top = 2.dp, bottom = 4.dp)
             )
         }
-        DealFavourite(isFavourite)
+        DealFavouriteButton(isFavourite, favouriteOnClick)
     }
 }
 
 @Composable
-fun DealFavourite(isFavourite: Boolean) {
-    val iconRes = if (isFavourite) {
-        R.drawable.ic_baseline_favorite_24
-    } else {
-        R.drawable.ic_baseline_favorite_border_24
-    }
-    val favIcon = vectorResource(iconRes)
-
+fun DealFavouriteButton(isFavourite: Boolean, onClick: () -> Unit) {
     Ripple(bounded = true) {
-        Padding(padding = 12.dp) {
-            Container(modifier = LayoutSize(width = 24.dp, height = 24.dp)) {
-                DrawVector(vectorImage = favIcon)
+        Clickable(onClick = onClick) {
+            Padding(padding = 12.dp) {
+                Container(modifier = LayoutSize(width = 24.dp, height = 24.dp)) {
+                    val iconRes = if (isFavourite) {
+                        R.drawable.ic_baseline_favorite_24
+                    } else {
+                        R.drawable.ic_baseline_favorite_border_24
+                    }
+                    val favIcon = vectorResource(iconRes)
+                    DrawVector(vectorImage = favIcon)
+                }
             }
         }
     }
@@ -263,13 +276,13 @@ fun DealSearchTag(name: String) {
 @Preview()
 @Composable
 fun DefaultPreview() {
-    DealCard(deal = deal2)
+    DealCard(model = DealModel(deal2))
 }
 
 @Preview()
 @Composable
 fun DealNamesPreview() {
-    DealNames(deal1.title, deal2.subtitle, true)
+    DealNamesRow(deal1.title, deal2.subtitle, true) {}
 }
 
 @Preview

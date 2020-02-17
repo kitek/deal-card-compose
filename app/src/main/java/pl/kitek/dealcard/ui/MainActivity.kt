@@ -14,15 +14,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Timber.plant(Timber.DebugTree())
 
-
         setContent {
             MaterialTheme(
-                colors = lightThemeColors,
-                typography = themeTypography
+                    colors = lightThemeColors,
+                    typography = themeTypography
             ) {
                 HomeScreen()
             }
-
         }
     }
 }

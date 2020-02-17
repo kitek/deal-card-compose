@@ -1,5 +1,7 @@
 package pl.kitek.dealcard.model
 
+import androidx.compose.Model
+
 data class BasicDeal(
     val id: String,
     val title: String,
@@ -7,7 +9,6 @@ data class BasicDeal(
     val mainImageResId: Int,
     val partnerLogoResId: Int = 0,
     val price: DealPrice,
-    val isFavourite: Boolean = false,
     val usps: List<UniqueSellingPoint> = emptyList(),
     val searchTags: List<String> = emptyList()
 )
@@ -18,3 +19,15 @@ interface UniqueSellingPoint
 
 data class SaveUsp(val amount: Int) : UniqueSellingPoint
 data class BoughtUsp(val amount: String) : UniqueSellingPoint
+
+@Model
+data class DealModel(
+    val basicDeal: BasicDeal,
+    var isFavourite: Boolean = false
+) {
+
+    fun toggleFavourite() {
+        isFavourite = !isFavourite
+    }
+
+}
