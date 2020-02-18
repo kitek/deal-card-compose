@@ -20,12 +20,9 @@ import androidx.ui.text.TextStyle
 import androidx.ui.text.font.FontFamily
 import androidx.ui.text.font.FontWeight
 import androidx.ui.text.style.TextDecoration
-import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
 import androidx.ui.unit.sp
 import pl.kitek.dealcard.R
-import pl.kitek.dealcard.data.deal1
-import pl.kitek.dealcard.data.deal2
 import pl.kitek.dealcard.model.*
 import pl.kitek.dealcard.ui.VectorImage
 import pl.kitek.dealcard.ui.dealCardFontFamily
@@ -33,23 +30,25 @@ import pl.kitek.dealcard.ui.dealCardFontFamily
 @Composable
 fun DealCard(model: DealModel) {
     Ripple(bounded = true) {
-        Column {
-            Stack {
-                DealCardImage(
-                    mainImageRes = model.basicDeal.mainImageResId,
-                    partnerImageRes = model.basicDeal.partnerLogoResId
-                )
-                DealPrice(model.basicDeal.price, modifier = LayoutGravity.BottomRight)
+        Surface(color = Color.White) {
+            Column {
+                Stack {
+                    DealCardImage(
+                        mainImageRes = model.basicDeal.mainImageResId,
+                        partnerImageRes = model.basicDeal.partnerLogoResId
+                    )
+                    DealPrice(model.basicDeal.price, modifier = LayoutGravity.BottomRight)
+                }
+                DealNamesRow(
+                    model.basicDeal.title,
+                    model.basicDeal.subtitle,
+                    model.isFavourite
+                ) {
+                    model.toggleFavourite()
+                }
+                DealSellingPoints(model.basicDeal.usps)
+                DealSearchTags(model.basicDeal.searchTags)
             }
-            DealNamesRow(
-                model.basicDeal.title,
-                model.basicDeal.subtitle,
-                model.isFavourite
-            ) {
-                model.toggleFavourite()
-            }
-            DealSellingPoints(model.basicDeal.usps)
-            DealSearchTags(model.basicDeal.searchTags)
         }
     }
 }
@@ -143,18 +142,24 @@ fun DealNamesRow(
     val titleStyle = ((MaterialTheme.typography()).subtitle1)
     val subTitleStyle = ((MaterialTheme.typography()).subtitle2)
 
-    Row(modifier = LayoutPadding(left = 16.dp, right = 4.dp) + LayoutWidth.Fill) {
-        Column(modifier = LayoutPadding(top = 11.dp) + LayoutFlexible(1f)) {
-            Text(title, style = titleStyle)
-            Text(
-                subtitle,
-                style = subTitleStyle,
-                modifier = LayoutPadding(top = 2.dp, bottom = 4.dp)
-            )
+    Surface(color = Color.White) {
+
+        Row(modifier = LayoutPadding(left = 16.dp, right = 4.dp) + LayoutWidth.Fill) {
+
+            Column(modifier = LayoutPadding(top = 12.dp) + LayoutFlexible(1f)) {
+
+                Text(title, style = titleStyle)
+                Text(
+                    subtitle,
+                    style = subTitleStyle,
+                    modifier = LayoutPadding(top = 2.dp, bottom = 4.dp)
+                )
+            }
+            DealFavouriteButton(isFavourite, favouriteOnClick)
         }
-        DealFavouriteButton(isFavourite, favouriteOnClick)
     }
 }
+
 
 @Composable
 fun DealFavouriteButton(isFavourite: Boolean, onClick: () -> Unit) {
@@ -179,19 +184,21 @@ fun DealFavouriteButton(isFavourite: Boolean, onClick: () -> Unit) {
 fun DealSellingPoints(usps: List<UniqueSellingPoint>) {
     if (usps.isEmpty()) return
 
-    Row(
-        arrangement = Arrangement.Begin,
-        modifier = LayoutPadding(
-            left = 8.dp,
-            right = 8.dp,
-            top = 4.dp,
-            bottom = 8.dp
-        ) + LayoutWidth.Fill
-    ) {
-        usps.forEach {
-            when (it) {
-                is BoughtUsp -> DealDealBoughtSellingPoint(it.amount)
-                is SaveUsp -> DealSaveSellingPoint(it.amount)
+    Surface(color = Color.White) {
+        Row(
+            arrangement = Arrangement.Begin,
+            modifier = LayoutPadding(
+                left = 8.dp,
+                right = 8.dp,
+                top = 4.dp,
+                bottom = 8.dp
+            ) + LayoutWidth.Fill
+        ) {
+            usps.forEach {
+                when (it) {
+                    is BoughtUsp -> DealDealBoughtSellingPoint(it.amount)
+                    is SaveUsp -> DealSaveSellingPoint(it.amount)
+                }
             }
         }
     }
@@ -248,12 +255,12 @@ fun DealSearchTags(searchTags: List<String>) {
 }
 
 @Composable
-fun DealSearchTag(name: String) {
+fun DealSearchTag(name: String, modifier: Modifier = Modifier.None) {
     Surface(
         borderWidth = 1.dp,
         borderBrush = SolidColor(Color(0xb3000000)),
         shape = RoundedCornerShape(16.dp),
-        modifier = LayoutPadding(left = 4.dp, right = 4.dp)
+        modifier = modifier + LayoutPadding(left = 4.dp, right = 4.dp)
     ) {
         Ripple(bounded = true) {
             Padding(left = 8.dp, right = 8.dp, top = 7.dp, bottom = 7.dp) {
@@ -273,20 +280,66 @@ fun DealSearchTag(name: String) {
     }
 }
 
-@Preview()
-@Composable
-fun DefaultPreview() {
-    DealCard(model = DealModel(deal2))
-}
 
-@Preview()
-@Composable
-fun DealNamesPreview() {
-    DealNamesRow(deal1.title, deal2.subtitle, true) {}
-}
+//@Preview(
+//    name = "Full Deal Card",
+//    group = "Top level components",
+//    widthDp = 200,
+//    heightDp = 600
+//)
+//@Composable
+//fun DefaultPreview() {
+//    DealCard(model = DealModel(deal2))
+//}
+//
+//@Preview(
+//    name = "Deal names with favourite",
+//    group = "Subcomponents"
+//)
+//@Composable
+//fun DealNamesPreview() {
+//    DealNamesRow(deal3.title, deal3.subtitle, true) {}
+//}
 
-@Preview
-@Composable
-fun DealSellingPointsPreview() {
-    DealSellingPoints(deal1.usps)
-}
+//@Preview(name = "Deal selling points")
+//@Composable
+//fun DealSellingPointsPreview() {
+//    DealSellingPoints(deal1.usps)
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
