@@ -3,18 +3,16 @@ package pl.kitek.dealcard.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
-import androidx.compose.state
 import androidx.ui.core.Modifier
 import androidx.ui.core.Text
 import androidx.ui.core.setContent
 import androidx.ui.graphics.Color
 import androidx.ui.layout.*
-import androidx.ui.material.Button
 import androidx.ui.material.surface.Surface
 import androidx.ui.text.TextStyle
-import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
 import androidx.ui.unit.sp
+import pl.kitek.dealcard.ui.home.HomeScreen
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,27 +20,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            //            HomeScreen()
-
-            AwesomeCounter()
-
+            HomeScreen()
         }
     }
 }
 
 
-@Preview
-@Composable
-fun AwesomeCounter() {
 
-    val counter = state { 0 }
-    Surface(color = Color.White) {
-        Row(arrangement = Arrangement.SpaceEvenly, modifier = LayoutWidth(300.dp)) {
-            Text(text = "Current value: ${counter.value}")
-            Button("Click me", onClick = { counter.value += 1 })
-        }
-    }
-}
 
 //@Preview(name = "Begin")
 //@Composable
@@ -138,13 +122,13 @@ fun AwesomeCounter() {
 //}
 
 
-@Preview
-@Composable
-fun LayoutPaddingPreview() {
-
-    PriceText(text = "Buy me", modifier = LayoutPadding(10.dp))
-
-}
+//@Preview
+//@Composable
+//fun LayoutPaddingPreview() {
+//
+//    PriceText(text = "Buy me", modifier = LayoutPadding(10.dp))
+//
+//}
 
 @Composable
 fun PriceText(text: String, modifier: Modifier = Modifier.None) {
